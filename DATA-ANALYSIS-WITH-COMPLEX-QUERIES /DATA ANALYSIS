@@ -1,0 +1,115 @@
+TASK 2:
+•	CREATE TABLE STUDENT:-
+CREATE TABLE students (
+student_id INT PRIMARY KEY,
+name VARCHAR(100),
+score INT,
+class VARCHAR(50),
+exam_date DATE
+);
+•	INSERTING THE DATA IN TABLE:-
+INSERT INTO students (student_id, name, score, class, exam_date)
+VALUES
+(1, 'Bhavesh', 85, 'Math', '2025-01-15'),
+(2, 'Sushil', 78, 'Math', '2025-01-15'),
+(3, 'Payal', 92, 'Math', '2025-01-15'),
+(4, 'Avira', 75, 'Science', '2025-01-16'),
+(5, 'Chhaku', 82, 'Science', '2025-01-16'),
+(6, 'Pranali', 82, 'Math', '2025-01-20'),
+(7, 'Tanu', 91, 'Math', '2025-01-20'); 
+
+•	PERFORM ADVANCED DATA ANALYSIS:- Rank Students by Score in Each Class
+SELECT student_id,
+name,
+score,
+class,
+RANK() OVER (PARTITION BY class ORDER BY score DESC) AS rank_within_class
+FROM students;
+ 
+•	SUBQUERY EXAMPLE:- Find Students Who Scored Above the Average in Their Class
+SELECT student_id,
+name,
+score,
+class
+FROM students
+WHERE score > (
+SELECT AVG(score)
+FROM students
+WHERE class = students.class
+);
+ 
+
+•	COMMON TABLE EXPRESSION (CTE): Top 3 Students by Score in Each Class
+WITH ranked_students AS (
+SELECT student_id,
+name,
+score,
+class,
+RANK() OVER (PARTITION BY class ORDER BY score DESC) AS rank_within_class
+FROM students
+)
+SELECT student_id,
+name,
+score,
+class
+FROM ranked_students
+WHERE rank_within_class <= 3;
+ 
+•	WINDOW FUNCTION :-  Calculate Cumulative Score for Each Student
+SELECT student_id,
+name,
+score,
+exam_date,
+SUM(score) OVER (PARTITION BY student_id ORDER BY exam_date) AS cumulative_score
+FROM students;
+ 
+•	SUBQEURY:-  Find Students Who Scored Above the Overall Average Score
+SELECT student_id,
+name,
+score,
+class
+FROM students
+WHERE score > (
+SELECT AVG(score)
+FROM students
+);
+ 
+
+•	CTE AND WINDOW FUNCTION:- Find Students Who Scored Above the Class Average and Rank Them.
+WITH class_avg_score AS (
+SELECT class,
+AVG(score) AS avg_score
+FROM students
+GROUP BY class
+)
+SELECT s.student_id,
+s.name,
+s.score,
+s.class,
+RANK() OVER (PARTITION BY s.class ORDER BY s.score DESC) AS rank_within_class
+FROM students s
+JOIN class_avg_score cas
+ON s.class = cas.class
+WHERE s.score > cas.avg_score;
+ 
+•	Find the Best Scorer in Each Class Using SUBQEURY
+SELECT student_id,
+name,
+score,
+class
+FROM students
+WHERE (class, score) IN (
+SELECT class, MAX(score)
+FROM students
+GROUP BY class
+);
+ 
+OUTPUT:
+![Image](https://github.com/user-attachments/assets/4f8bb47d-630e-4eeb-a76f-35693661541e)
+![Image](https://github.com/user-attachments/assets/0f15cd28-0f2b-41a9-84c4-7977ee5cf3bf)
+![Image](https://github.com/user-attachments/assets/05347083-12ef-42cf-858a-85419d96a717)
+![Image](https://github.com/user-attachments/assets/a2f0dcdd-8b73-4c16-b8fb-791325b1f663)
+![Image](https://github.com/user-attachments/assets/98987040-0351-46ef-982f-02370b1d33b4)
+![Image](https://github.com/user-attachments/assets/697bab99-a067-4561-adf5-897725e9bef4)
+![Image](https://github.com/user-attachments/assets/5026b035-d980-4069-bb0f-5e62caaef029)
+![Image](https://github.com/user-attachments/assets/e3a0f733-2eeb-454e-a9c5-4d882f5c0345)
